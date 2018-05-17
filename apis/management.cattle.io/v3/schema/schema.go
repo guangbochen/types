@@ -35,7 +35,8 @@ var (
 		Init(rkeTypes).
 		Init(alertTypes).
 		Init(pipelineTypes).
-		Init(composeType)
+		Init(composeType).
+		Init(registryTypes)
 
 	TokenSchemas = factory.Schemas(&Version).
 			Init(tokens)
@@ -498,4 +499,11 @@ func pipelineTypes(schema *types.Schemas) *types.Schemas {
 func composeType(schemas *types.Schemas) *types.Schemas {
 	return schemas.MustImport(&Version, v3.GlobalComposeConfig{}).
 		MustImport(&Version, v3.ClusterComposeConfig{})
+}
+
+func registryTypes(schemas *types.Schemas) *types.Schemas {
+	return schemas.
+		AddMapperForType(&Version, v3.ClusterRegistry{},
+			m.DisplayName{}).
+		MustImport(&Version, v3.ClusterRegistry{})
 }
