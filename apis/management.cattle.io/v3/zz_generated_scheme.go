@@ -110,6 +110,10 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 		&ProjectCatalogList{},
 		&ClusterCatalog{},
 		&ClusterCatalogList{},
+		&EtcdBackupConfig{},
+		&EtcdBackupConfigList{},
+		&EtcdBackup{},
+		&EtcdBackupList{},
 	)
 	return nil
 }

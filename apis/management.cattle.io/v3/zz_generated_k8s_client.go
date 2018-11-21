@@ -56,6 +56,8 @@ type Interface interface {
 	ComposeConfigsGetter
 	ProjectCatalogsGetter
 	ClusterCatalogsGetter
+	EtcdBackupConfigsGetter
+	EtcdBackupsGetter
 }
 
 type Client struct {
@@ -102,6 +104,8 @@ type Client struct {
 	composeConfigControllers                           map[string]ComposeConfigController
 	projectCatalogControllers                          map[string]ProjectCatalogController
 	clusterCatalogControllers                          map[string]ClusterCatalogController
+	etcdBackupConfigControllers                        map[string]EtcdBackupConfigController
+	etcdBackupControllers                              map[string]EtcdBackupController
 }
 
 func Factory(ctx context.Context, config rest.Config) (context.Context, controller.Starter, error) {
@@ -169,6 +173,8 @@ func NewForConfig(config rest.Config) (Interface, error) {
 		composeConfigControllers:                           map[string]ComposeConfigController{},
 		projectCatalogControllers:                          map[string]ProjectCatalogController{},
 		clusterCatalogControllers:                          map[string]ClusterCatalogController{},
+		etcdBackupConfigControllers:                        map[string]EtcdBackupConfigController{},
+		etcdBackupControllers:                              map[string]EtcdBackupController{},
 	}, nil
 }
 
@@ -685,6 +691,32 @@ type ClusterCatalogsGetter interface {
 func (c *Client) ClusterCatalogs(namespace string) ClusterCatalogInterface {
 	objectClient := objectclient.NewObjectClient(namespace, c.restClient, &ClusterCatalogResource, ClusterCatalogGroupVersionKind, clusterCatalogFactory{})
 	return &clusterCatalogClient{
+		ns:           namespace,
+		client:       c,
+		objectClient: objectClient,
+	}
+}
+
+type EtcdBackupConfigsGetter interface {
+	EtcdBackupConfigs(namespace string) EtcdBackupConfigInterface
+}
+
+func (c *Client) EtcdBackupConfigs(namespace string) EtcdBackupConfigInterface {
+	objectClient := objectclient.NewObjectClient(namespace, c.restClient, &EtcdBackupConfigResource, EtcdBackupConfigGroupVersionKind, etcdBackupConfigFactory{})
+	return &etcdBackupConfigClient{
+		ns:           namespace,
+		client:       c,
+		objectClient: objectClient,
+	}
+}
+
+type EtcdBackupsGetter interface {
+	EtcdBackups(namespace string) EtcdBackupInterface
+}
+
+func (c *Client) EtcdBackups(namespace string) EtcdBackupInterface {
+	objectClient := objectclient.NewObjectClient(namespace, c.restClient, &EtcdBackupResource, EtcdBackupGroupVersionKind, etcdBackupFactory{})
+	return &etcdBackupClient{
 		ns:           namespace,
 		client:       c,
 		objectClient: objectClient,
